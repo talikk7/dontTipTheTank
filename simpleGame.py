@@ -10,7 +10,11 @@ pygame.font.init()
 FPS=15
 fpsClock=pygame.time.Clock()
 
+
+
 windowSize = 300 #this should be a square window
+gridBlockSize = 10 #This is used to make a discrete grid for the game.
+gridFactor = windowSize/gridBlockSize
 
 DISPLAYSURF=pygame.display.set_mode((windowSize,windowSize)) #see how its a square window
 pygame.display.set_caption("Don't tip the tank!")
@@ -31,7 +35,7 @@ pos = {"x":10,"y":10}
 deltaX = 0
 deltaY = 0
 directionStart = 'right'
-rate = 50
+rate = 10
 waterPos = {"x":windowSize/2,"y":windowSize/2}
 totalWaterBlocks=10
 evaporation=3
@@ -44,9 +48,15 @@ def incrementScore():
     _SCORE = _SCORE + 1
     scoreBoard = theFont.render("Score: " + str(_SCORE),False,(0,0,0))
 
+#This should check if the waterBlock is within the fish block
+def _compareTuple(t1,t2):
+    if(t1["x"] == t2["x"]) and (t2["y"] == t2["y"]):
+        return True
+    else:
+        return False
 
 def checkCollision(thing1,thing2):
-    if( cmp(thing1,thing2) ):
+    if( _compareTuple(thing1,thing2) ):
         print "THERE IS A COLLISION"
         print "Thing 1:", thing1
         print "Thing 2:", thing2
@@ -54,18 +64,16 @@ def checkCollision(thing1,thing2):
     else:
         return False
 
-def compareTuple(t1,t2):
-    if(t1["x"] == t2["x"]) and (t2["y"] == t2["y"]):
-        return True
-    else:
-        return False
+
 
 ''' THREADING THINGS '''
 def randBlockPos():
     #Updates the water blocks position 
     global waterPos
     for b in xrange(totalWaterBlocks):
-        waterPos = {"x":randint(0,windowSize),"y":randint(0,windowSize)}
+        tempRandX = randint(0,gridBlockSize) * gridFactor
+        tempRandY = randint(0,gridBlockSize) * gridFactor
+        waterPos = {"x":tempRandX,"y":tempRandY}
         time.sleep(evaporation)
     
 t = threading.Thread(target=randBlockPos)
@@ -89,7 +97,7 @@ while True:
                 deltaX = -(rate)
             if event.key == pygame.K_RIGHT:
                 deltaX = rate
-                print "Moving Left one block!"
+
             if event.key == pygame.K_UP:
                 deltaY = -rate
             if event.key == pygame.K_DOWN:
@@ -100,8 +108,9 @@ while True:
             pos["y"] = pos["y"] + deltaY
         
         
-    if compareTuple( waterPos,pos ):
-        incrementScore() #magic number for the score
+        if checkCollision( waterPos,pos ):
+            incrementScore() #magic number for the score
+
     #updates the screen
     DISPLAYSURF.fill(_OLIVE)
     DISPLAYSURF.blit(mainFish,(pos["x"],pos["y"]))
