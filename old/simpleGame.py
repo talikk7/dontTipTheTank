@@ -89,7 +89,7 @@ while True:
         deltaY = 0
         
         #Keyboard Events
-        if event.type == QUIT:
+        if event.type == g.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
