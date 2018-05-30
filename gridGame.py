@@ -1,30 +1,43 @@
-import sys
+import sys, time
 from threading import Thread
+from random import randint
 import pygame
 
 def checkCollision():
     global health
+    global _EXIT
 
-    status = health.inc()
-    print "inside checkCollision: ", health.printBuffer()
-    if status is True:
-        print "Health goes up!"
-    else:
-        print "CC: FISH IS FINE"
+    while _EXIT is False:
+        status = health.inc()
+        print "inside checkCollision: ", health.printBuffer()
+        if status is True:
+            print "Health goes up!"
+        else:
+            print "CC: FISH IS FINE"
 
-    #time.sleep(urandom(3) + 2)
+
+        time.sleep(randint(2,5))
+
+    print "Exiting check Collision Thread"
+    return 0
 
 def decrimentHealth():
     global health
+    global _EXIT
 
-    status = health.dec()
-    print "inside decrimentHealth: ", health.printBuffer()
-    if status is False:
-        print "The fish is dead!"
-    else:
-        print "DH: FISH IS FINE"
+    while _EXIT is False:
+        status = health.dec()
+        print "inside decrimentHealth: ", health.printBuffer()
+        if status is False:
+            print "The fish is dead!"
+            _EXIT = True
+        else:
+            print "DH: FISH IS FINE"
 
-    #time.sleep(urandom(3))
+        time.sleep(randint(0,3))
+
+    print "Exiting Decriment Health Thread"
+    return 0
 
 class semaphore(object):
     def __init__(self,name, initValue ):
@@ -82,14 +95,27 @@ class gameMachine(object):
     def updateDisplay(self):
         pygame.display.update()
 
+    def printGameTime(self):
+        self._FPS_CLOCK.get_time()
 
+_EXIT = False
 g = gameMachine()
 health = semaphore("Health",32)
-while True:
+
+threads = []
+t = Thread(target=checkCollision)
+threads.append(t)
+t = Thread(target=decrimentHealth)
+threads.append(t)
+for thing in threads:
+    thing.start()
+
+while _EXIT is False:
     g._DISPLAYSURF.fill(g._OLIVE)
-    decrimentHealth()
+
     for event in g.getEvents():
         if event.type == pygame.QUIT:
+            _EXIT = True
             g.quitGame()
 
     g._DISPLAYSURF.fill(g._OLIVE)
@@ -97,4 +123,4 @@ while True:
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
-    #print "Game Time: ", g.pygame._FPS_CLOCK.getTime()
+    g.printGameTime()
