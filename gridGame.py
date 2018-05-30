@@ -87,7 +87,7 @@ g = gameMachine()
 health = semaphore("Health",32)
 while True:
     g._DISPLAYSURF.fill(g._OLIVE)
-
+    decrimentHealth()
     for event in g.getEvents():
         if event.type == pygame.QUIT:
             g.quitGame()
