@@ -31,8 +31,6 @@ def decrimentHealth():
         if status is False:
             print "The fish is dead!"
             _EXIT = True
-        else:
-            print "DH: FISH IS FINE"
 
         time.sleep(randint(0,3))
 
@@ -61,6 +59,9 @@ class semaphore(object):
     def printBuffer(self):
         print "Buffer: " + str(self._NAME) + ":" + str(self._BUFFER_VAL) + "/" + str(self._START_VAL)
 
+    def returnBufferVal(self):
+        return int(self._BUFFER_VAL)
+
 class gameMachine(object):
     def __init__(self):
     #Global Variables
@@ -73,10 +74,7 @@ class gameMachine(object):
         self._DISPLAYSURF = pygame.display.set_mode((self._windowSize,self._windowSize))
         pygame.display.set_caption("Don't Tip the Tank!")
         self._FONT = pygame.font.SysFont('Comic Sans MS',30)
-    #Game Mechanic Settings
-        self._TANKFILL = 0
-        self._TANKSCORE = self._FONT.render("Tank Status: " + str(self._TANKFILL), False, (0,0,0))
-    #Character images
+      #Character images
         self._MAINFISH = pygame.image.load('static/simpleFish.png')
         self._WATERBLOCK = pygame.image.load('static/waterBlock.png')
     #Color Codes
@@ -96,17 +94,18 @@ class gameMachine(object):
         pygame.display.update()
 
     def printGameTime(self):
-        self._FPS_CLOCK.get_time()
+        print self._FPS_CLOCK.get_time()
 
+
+''' GAME MAIN '''
 _EXIT = False
 g = gameMachine()
-health = semaphore("Health",32)
+health = semaphore("Health",10)
 
 threads = []
-t = Thread(target=checkCollision)
-threads.append(t)
-t = Thread(target=decrimentHealth)
-threads.append(t)
+threads.append( Thread(target=checkCollision))
+threads.append( Thread(target=decrimentHealth))
+
 for thing in threads:
     thing.start()
 
@@ -119,7 +118,9 @@ while _EXIT is False:
             g.quitGame()
 
     g._DISPLAYSURF.fill(g._OLIVE)
-    g._DISPLAYSURF.blit(g._TANKSCORE,(0,0))
+    _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
+
+    g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
