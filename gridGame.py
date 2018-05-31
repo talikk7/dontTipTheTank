@@ -71,6 +71,7 @@ class gameMachine(object):
         self._FPS_CLOCK = pygame.time.Clock()
     #Game Engine Settings
         self._windowSize = 500
+        self._numCells = 5
         self._DISPLAYSURF = pygame.display.set_mode((self._windowSize,self._windowSize))
         pygame.display.set_caption("Don't Tip the Tank!")
         self._FONT = pygame.font.SysFont('Comic Sans MS',30)
@@ -79,6 +80,16 @@ class gameMachine(object):
         self._WATERBLOCK = pygame.image.load('static/waterBlock.png')
     #Color Codes
         self._OLIVE = (128,128,0)
+        self._BLUE = (0,0,255)
+        self._WHITE = (255,255,255)
+        self._GREEN = (0,255,0)
+        self._BLACK = (0,0,0)
+    def constructGrid(self):
+        pygame.draw.line(self._DISPLAYSURF,self._BLACK,(250,0),(250,500),1)
+                
+               
+    def drawFish(self,color,side,thickness):
+        pygame.draw.circle(self._DISPLAYSURF,color,(0,0),side,thickness)
 
     def quitGame(self):
         pygame.quit()
@@ -96,10 +107,14 @@ class gameMachine(object):
     def printGameTime(self):
         print self._FPS_CLOCK.get_time()
 
+    def getScreen(self):
+        return self._DISPLAYSURF 
+
 
 ''' GAME MAIN '''
 _EXIT = False
 g = gameMachine()
+g.constructGrid()
 health = semaphore("Health",10)
 
 threads = []
@@ -121,7 +136,7 @@ while _EXIT is False:
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
+    g.drawFish(g._BLUE,90,0)
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
-    g.printGameTime()
