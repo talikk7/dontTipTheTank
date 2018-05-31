@@ -109,13 +109,21 @@ class gameMachine(object):
                 
                
     def drawFish(self,color):
-        thickness = 0 #filled in circle
-        print "Drawing a fish here: ",self.startPosition[1]
-        index0 = self.startPosition[1][0] 
-        index1 = self.startPosition[1][1]
-        renderSize = self.theGrid[str(index0)+','+str(index1)]
-        radius = renderSize[1]/2
-        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition[0],radius,thickness)
+        try:
+            thickness = 0 #filled in circle
+            print "Drawing a fish here: ",self.startPosition[1]
+            index0 = self.startPosition[1][0] 
+            index1 = self.startPosition[1][1]
+            renderSize = self.theGrid[str(index0)+','+str(index1)]
+            radius = renderSize[1]/2
+            pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition[0],radius,thickness)
+        except:
+            print "out of bounds, im not rendering that!"
+
+    def drawTriangle(self):
+            temp = g._windowSize
+            ptList = [(0,temp),(temp/2,0),(temp,temp)]
+            pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,ptList,30)
 
     def quitGame(self):
         pygame.quit()
@@ -189,6 +197,7 @@ while _EXIT is False:
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
     #g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
+    g.drawTriangle()
     g.drawFish(g._BLUE)
     g.displayImages()
     g.updateDisplay()
