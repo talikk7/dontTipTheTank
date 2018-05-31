@@ -108,7 +108,7 @@ class gameMachine(object):
         pprint( grid )
                 
                
-    def drawFish(self,color,thickness):
+    def drawFish(self,color):
         thickness = 0 #filled in circle
         print "Drawing a fish here: ",self.startPosition[1]
         index0 = self.startPosition[1][0] 
@@ -188,8 +188,8 @@ while _EXIT is False:
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
-    g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
-    g.drawFish(g._BLUE,0)
+    #g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
+    g.drawFish(g._BLUE)
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
