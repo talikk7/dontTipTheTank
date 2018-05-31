@@ -1,6 +1,7 @@
 import sys, time
 from threading import Thread
 from random import randint
+from pprint import pprint
 import pygame
 
 def checkCollision():
@@ -12,10 +13,7 @@ def checkCollision():
         print "inside checkCollision: ", health.printBuffer()
         if status is True:
             print "Health goes up!"
-        else:
-            print "CC: FISH IS FINE"
-
-
+        
         time.sleep(randint(2,5))
 
     print "Exiting check Collision Thread"
@@ -78,6 +76,10 @@ class gameMachine(object):
       #Character images
         self._MAINFISH = pygame.image.load('static/simpleFish.png')
         self._WATERBLOCK = pygame.image.load('static/waterBlock.png')
+        
+    #Grid Variables
+        self.startDiameter = self._windowSize / self._numCells
+        self.startPosition = [ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ]
     #Color Codes
         self._OLIVE = (128,128,0)
         self._BLUE = (0,0,255)
@@ -85,11 +87,24 @@ class gameMachine(object):
         self._GREEN = (0,255,0)
         self._BLACK = (0,0,0)
     def constructGrid(self):
-        pygame.draw.line(self._DISPLAYSURF,self._BLACK,(250,0),(250,500),1)
+
+        tempFactor = self._numCells
+        grid = []
+
+        for i in xrange(0,self._numCells):
+            row = []
+            for j in xrange(0,self._numCells):
+                row.append( [[i,j],tempFactor] )
+            grid.append(row)
+            tempFactor-=1
+
+        
+
+        pprint( grid )
                 
                
     def drawFish(self,color,side,thickness):
-        pygame.draw.circle(self._DISPLAYSURF,color,(0,0),side,thickness)
+        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition,side,thickness)
 
     def quitGame(self):
         pygame.quit()
