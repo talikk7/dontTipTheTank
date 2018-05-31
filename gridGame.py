@@ -80,12 +80,15 @@ class gameMachine(object):
     #Grid Variables
         self.startDiameter = self._windowSize / self._numCells
         self.startPosition = [ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ]
+        self.theGrid = []
+
     #Color Codes
         self._OLIVE = (128,128,0)
         self._BLUE = (0,0,255)
         self._WHITE = (255,255,255)
         self._GREEN = (0,255,0)
         self._BLACK = (0,0,0)
+
     def constructGrid(self):
 
         tempFactor = self._numCells
@@ -94,17 +97,16 @@ class gameMachine(object):
         for i in xrange(0,self._numCells):
             row = []
             for j in xrange(0,self._numCells):
-                row.append( [[i,j],tempFactor] )
+                row.append( [[i,j],tempFactor, self.startDiameter/tempFactor] )
             grid.append(row)
             tempFactor-=1
-
         
-
+        self.theGrid = grid
         pprint( grid )
                 
                
-    def drawFish(self,color,side,thickness):
-        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition,side,thickness)
+    def drawFish(self,color,radius,thickness):
+        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition,radius,thickness)
 
     def quitGame(self):
         pygame.quit()
@@ -139,19 +141,39 @@ threads.append( Thread(target=decrimentHealth))
 for thing in threads:
     thing.start()
 
+rate = 100
 while _EXIT is False:
     g._DISPLAYSURF.fill(g._OLIVE)
+    
+    deltaX = 0
+    deltaY = 0
 
     for event in g.getEvents():
         if event.type == pygame.QUIT:
             _EXIT = True
             g.quitGame()
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                deltaX = -rate
+            if event.key == pygame.K_RIGHT:
+                deltaX = rate
+
+            if event.key == pygame.K_UP:
+                deltaY = -rate
+            if event.key == pygame.K_DOWN:
+                deltaY = (rate) 
+
+            
+            g.startPosition[0]+= deltaX
+            g.startPosition[1]+= deltaY
+
     g._DISPLAYSURF.fill(g._OLIVE)
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
-    g.drawFish(g._BLUE,90,0)
+    g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
+    g.drawFish(g._BLUE,50,0)
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
