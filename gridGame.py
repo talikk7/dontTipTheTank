@@ -93,28 +93,28 @@ class gameMachine(object):
 
         tempFactor = self._numCells
         grid = []
-        temp = {}
+        temp = []
 
         for i in xrange(0,self._numCells):
             row = []
             for j in xrange(0,self._numCells):
-                temp[str(i)+','+str(j)] = [tempFactor, self.startDiameter/tempFactor]
+                temp = (str(i)+','+str(j), [tempFactor, self.startDiameter/tempFactor])
                 grid.append( temp )
-                temp = {}
             #grid.append(row)
             tempFactor-=1
        
  
-        self.theGrid = dict(grid[0])
-        pprint( grid[0] )
+        self.theGrid = dict(grid)
+        pprint( grid )
                 
                
-    def drawFish(self,color,radius,thickness):
+    def drawFish(self,color,thickness):
         thickness = 0 #filled in circle
         print "Drawing a fish here: ",self.startPosition[1]
         index0 = self.startPosition[1][0] 
         index1 = self.startPosition[1][1]
-        print "Render Size: ",[str(index0)+','+str(index1)]
+        renderSize = self.theGrid[str(index0)+','+str(index1)]
+        radius = renderSize[1]/2
         pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition[0],radius,thickness)
 
     def quitGame(self):
@@ -189,7 +189,7 @@ while _EXIT is False:
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
     g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
-    g.drawFish(g._BLUE,50,0)
+    g.drawFish(g._BLUE,0)
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
