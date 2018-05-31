@@ -10,7 +10,7 @@ def checkCollision():
 
     while _EXIT is False:
         status = health.inc()
-        print "inside checkCollision: ", health.printBuffer()
+        #print "inside checkCollision: ", health.printBuffer()
         if status is True:
             print "Health goes up!"
         
@@ -25,7 +25,7 @@ def decrimentHealth():
 
     while _EXIT is False:
         status = health.dec()
-        print "inside decrimentHealth: ", health.printBuffer()
+        #print "inside decrimentHealth: ", health.printBuffer()
         if status is False:
             print "The fish is dead!"
             _EXIT = True
@@ -79,7 +79,7 @@ class gameMachine(object):
         
     #Grid Variables
         self.startDiameter = self._windowSize / self._numCells
-        self.startPosition = [ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ]
+        self.startPosition = [[ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ],[4,2] ]
         self.theGrid = []
 
     #Color Codes
@@ -93,20 +93,29 @@ class gameMachine(object):
 
         tempFactor = self._numCells
         grid = []
+        temp = {}
 
         for i in xrange(0,self._numCells):
             row = []
             for j in xrange(0,self._numCells):
-                row.append( [[i,j],tempFactor, self.startDiameter/tempFactor] )
-            grid.append(row)
+                temp[str(i)+','+str(j)] = [tempFactor, self.startDiameter/tempFactor]
+                grid.append( temp )
+                temp = {}
+            #grid.append(row)
             tempFactor-=1
-        
-        self.theGrid = grid
-        pprint( grid )
+       
+ 
+        self.theGrid = dict(grid[0])
+        pprint( grid[0] )
                 
                
     def drawFish(self,color,radius,thickness):
-        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition,radius,thickness)
+        thickness = 0 #filled in circle
+        print "Drawing a fish here: ",self.startPosition[1]
+        index0 = self.startPosition[1][0] 
+        index1 = self.startPosition[1][1]
+        print "Render Size: ",[str(index0)+','+str(index1)]
+        pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition[0],radius,thickness)
 
     def quitGame(self):
         pygame.quit()
@@ -155,19 +164,26 @@ while _EXIT is False:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
+                print "Moving Left:"
                 deltaX = -rate
+                g.startPosition[1][1]-=1
             if event.key == pygame.K_RIGHT:
+                print "Moving Right:"
                 deltaX = rate
-
+                g.startPosition[1][1]+=1
             if event.key == pygame.K_UP:
+                print "Moving Up:"
                 deltaY = -rate
+                g.startPosition[1][0]-=1
             if event.key == pygame.K_DOWN:
+                print "Moving Down:"
                 deltaY = (rate) 
+                g.startPosition[1][0]+=1
 
             
-            g.startPosition[0]+= deltaX
-            g.startPosition[1]+= deltaY
-
+            g.startPosition[0][0]+= deltaX
+            g.startPosition[0][1]+= deltaY
+            print g.startPosition
     g._DISPLAYSURF.fill(g._OLIVE)
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
