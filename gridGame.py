@@ -79,7 +79,7 @@ class gameMachine(object):
         
     #Grid Variables
         self.startDiameter = self._windowSize / self._numCells
-        self.startPosition = [[ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ],[4,2] ]
+        self.fishPosition = [[ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ],[4,2] ]
         self.theGrid = []
 
     #Color Codes
@@ -100,7 +100,7 @@ class gameMachine(object):
             for j in xrange(0,self._numCells):
                 temp = (str(i)+','+str(j), [tempFactor, self.startDiameter/tempFactor])
                 grid.append( temp )
-            #grid.append(row)
+    
             tempFactor-=1
        
  
@@ -111,19 +111,20 @@ class gameMachine(object):
     def drawFish(self,color):
         try:
             thickness = 0 #filled in circle
-            print "Drawing a fish here: ",self.startPosition[1]
-            index0 = self.startPosition[1][0] 
-            index1 = self.startPosition[1][1]
+            #print "Drawing a fish here: ",self.fishPosition[1]
+            index0 = self.fishPosition[1][0] 
+            index1 = self.fishPosition[1][1]
             renderSize = self.theGrid[str(index0)+','+str(index1)]
             radius = renderSize[1]/2
-            pygame.draw.circle(self._DISPLAYSURF,color,self.startPosition[0],radius,thickness)
+            pygame.draw.circle(self._DISPLAYSURF,color,self.fishPosition[0],radius,thickness)
         except:
             print "out of bounds, im not rendering that!"
 
+
     def drawTriangle(self):
-            temp = g._windowSize
-            ptList = [(0,temp),(temp/2,0),(temp,temp)]
-            pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,ptList,30)
+        temp = g._windowSize
+        ptList = [(0,temp),(temp/2,0),(temp,temp)]
+        pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,ptList,15)
 
     def quitGame(self):
         pygame.quit()
@@ -174,29 +175,32 @@ while _EXIT is False:
             if event.key == pygame.K_LEFT:
                 print "Moving Left:"
                 deltaX = -rate
-                g.startPosition[1][1]-=1
+                g.fishPosition[1][1]-=1
             if event.key == pygame.K_RIGHT:
                 print "Moving Right:"
                 deltaX = rate
-                g.startPosition[1][1]+=1
+                g.fishPosition[1][1]+=1
             if event.key == pygame.K_UP:
                 print "Moving Up:"
                 deltaY = -rate
-                g.startPosition[1][0]-=1
+                g.fishPosition[1][0]-=1
             if event.key == pygame.K_DOWN:
                 print "Moving Down:"
                 deltaY = (rate) 
-                g.startPosition[1][0]+=1
+                g.fishPosition[1][0]+=1
+            
+
+            g.fishPosition[0][0]+= deltaX
+            g.fishPosition[0][1]+= deltaY
 
             
-            g.startPosition[0][0]+= deltaX
-            g.startPosition[0][1]+= deltaY
-            print g.startPosition
+
+            print "Here is the g.fishPosition:",g.fishPosition
     g._DISPLAYSURF.fill(g._OLIVE)
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
-    #g._DISPLAYSURF.blit(g._MAINFISH,(g.startPosition[0],g.startPosition[1]))
+    #g._DISPLAYSURF.blit(g._MAINFISH,(g.fishPosition[0],g.fishPosition[1]))
     g.drawTriangle()
     g.drawFish(g._BLUE)
     g.displayImages()
