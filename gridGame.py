@@ -76,6 +76,7 @@ class gameMachine(object):
       #Character images
         self._MAINFISH = pygame.image.load('static/simpleFish.png')
         self._WATERBLOCK = pygame.image.load('static/waterBlock.png')
+        self._BACKGROUND = pygame.image.load('static/backGround0.png')
         
     #Grid Variables
         self.startDiameter = self._windowSize / self._numCells
@@ -199,6 +200,7 @@ while _EXIT is False:
     g._DISPLAYSURF.fill(g._OLIVE)
     _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
 
+    g._DISPLAYSURF.blit(g._BACKGROUND,(0,0))
     g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
     #g._DISPLAYSURF.blit(g._MAINFISH,(g.fishPosition[0],g.fishPosition[1]))
     g.drawTriangle()
