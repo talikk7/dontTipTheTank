@@ -68,7 +68,7 @@ class gameMachine(object):
         self._FPS = 15
         self._FPS_CLOCK = pygame.time.Clock()
     #Game Engine Settings
-        self._windowSize = 500
+        self._windowSize = 700
         self._numCells = 5
         self._DISPLAYSURF = pygame.display.set_mode((self._windowSize,self._windowSize))
         pygame.display.set_caption("Don't Tip the Tank!")
@@ -98,7 +98,7 @@ class gameMachine(object):
         for i in xrange(0,self._numCells):
             row = []
             for j in xrange(0,self._numCells):
-                temp = (str(i)+','+str(j), [tempFactor, self.startDiameter/tempFactor])
+                temp = (str(i)+','+str(j), self.startDiameter/tempFactor)
                 grid.append( temp )
     
             tempFactor-=1
@@ -106,18 +106,24 @@ class gameMachine(object):
  
         self.theGrid = dict(grid)
         pprint( grid )
+
+    def returnGridFactor(self):
+        try:
+            index0 = self.fishPosition[1][0]
+            index1 = self.fishPosition[1][1]
+            gridFactor = self.theGrid[str(index0)+','+str(index1)]
+            return gridFactor
+        except:
+            return -1
                 
                
     def drawFish(self,color):
-        try:
-            thickness = 0 #filled in circle
-            #print "Drawing a fish here: ",self.fishPosition[1]
-            index0 = self.fishPosition[1][0] 
-            index1 = self.fishPosition[1][1]
-            renderSize = self.theGrid[str(index0)+','+str(index1)]
-            radius = renderSize[1]/2
+        thickness = 0 #filled in circle
+        gridFact = self.returnGridFactor()
+        if gridFact is not -1:
+            radius = gridFact/2
             pygame.draw.circle(self._DISPLAYSURF,color,self.fishPosition[0],radius,thickness)
-        except:
+        else:
             print "out of bounds, im not rendering that!"
 
 
@@ -172,6 +178,7 @@ while _EXIT is False:
             g.quitGame()
 
         if event.type == pygame.KEYDOWN:
+
             if event.key == pygame.K_LEFT:
                 print "Moving Left:"
                 deltaX = -rate
