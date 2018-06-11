@@ -76,11 +76,11 @@ class gameMachine(object):
       #Character images
         self._MAINFISH = pygame.image.load('static/simpleFish.png')
         self._WATERBLOCK = pygame.image.load('static/waterBlock.png')
-        self._BACKGROUND = pygame.image.load('static/backGround0.png')
+        #self._BACKGROUND = pygame.image.load('static/backGround0.png')
         
     #Grid Variables
         self.startDiameter = self._windowSize / self._numCells
-        self.fishPosition = [[ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ],[4,2] ]
+        self.fishPosition = [[ self._windowSize/2 , self._windowSize - (self.startDiameter/2) ],[4,2] ] 
         self.theGrid = []
 
     #Color Codes
@@ -89,13 +89,21 @@ class gameMachine(object):
         self._WHITE = (255,255,255)
         self._GREEN = (0,255,0)
         self._BLACK = (0,0,0)
+        self._BACKGROUND = self._WHITE
+
 
     def constructGrid(self):
 
         tempFactor = self._numCells
         grid = []
         temp = []
+        hardCodedGrid = [ [(210,192),(230,192),(250,192),(270,192),(290,192) ],
+                          [(200,217),(225,217),(250,217),(275,217),(300,217) ],
+                          [(184,350),(217,350),(250,350),(283,350),(316,350) ],
+                          [(150,400),(200,400),(250,400),(300,400),(350,400) ],
+                          [(50,500) ,(150,500),(250,500),(350,500),(450,500) ] ] 
 
+        print "Start Position in Hard Coded Grid: ",hardCodedGrid[4][2]
         for i in xrange(0,self._numCells):
             row = []
             for j in xrange(0,self._numCells):
@@ -118,14 +126,26 @@ class gameMachine(object):
             renderSize = self.theGrid[str(index0)+','+str(index1)]
             radius = renderSize[1]/2
             pygame.draw.circle(self._DISPLAYSURF,color,self.fishPosition[0],radius,thickness)
+            #print "Render Size:",renderSize
+            #print "Pixel Position: ", self.fishPosition[0]
+            return renderSize[1]
         except:
             print "out of bounds, im not rendering that!"
+            return -1
+    
+    def moveFish(self,moveDirection):
+        validMoves = {pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN}
+    
+        if moveDirection in validMoves:
+            print "You have a valid move!"    
 
 
     def drawTriangle(self):
         temp = g._windowSize
         ptList = [(0,temp),(temp/2,0),(temp,temp)]
-        pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,ptList,15)
+        pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,ptList,10)
+        horizonLine = [(0,150),(500,150)]
+        pygame.draw.lines(self._DISPLAYSURF,g._BLACK,True,horizonLine,10)
 
     def quitGame(self):
         pygame.quit()
@@ -153,16 +173,17 @@ g = gameMachine()
 g.constructGrid()
 health = semaphore("Health",10)
 
+
+'''
 threads = []
 threads.append( Thread(target=checkCollision))
 threads.append( Thread(target=decrimentHealth))
 
 for thing in threads:
     thing.start()
-
+'''
 rate = 100
 while _EXIT is False:
-    g._DISPLAYSURF.fill(g._OLIVE)
     
     deltaX = 0
     deltaY = 0
@@ -197,14 +218,19 @@ while _EXIT is False:
             
 
             print "Here is the g.fishPosition:",g.fishPosition
-    g._DISPLAYSURF.fill(g._OLIVE)
-    _SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
+    g._DISPLAYSURF.fill(g._WHITE)
+    #_SCOREBOARD = g._FONT.render("Tank Status: " + str(health.returnBufferVal()), False, (0,0,0))
+    _PIXELPOSITION = g._FONT.render("Pixel Position: " + str(g.fishPosition[0]), False, (0,0,0))
 
-    g._DISPLAYSURF.blit(g._BACKGROUND,(0,0))
-    g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
+    #g._DISPLAYSURF.blit(g._BACKGROUND,(0,0))
+    #g._DISPLAYSURF.blit(_SCOREBOARD,(0,0))
+    g._DISPLAYSURF.blit(_PIXELPOSITION,(0,0) )
     #g._DISPLAYSURF.blit(g._MAINFISH,(g.fishPosition[0],g.fishPosition[1]))
     g.drawTriangle()
-    g.drawFish(g._BLUE)
+    renderoni = g.drawFish(g._BLUE)
+    if renderoni is not -1:
+        _RENDERONI = g._FONT.render("Render Size: " + str(renderoni), False, (0,0,0))
+        g._DISPLAYSURF.blit(_RENDERONI,(0,100))
     g.displayImages()
     g.updateDisplay()
     g._FPS_CLOCK.tick(g._FPS)
